@@ -1,0 +1,65 @@
+language: cpp
+dist: bionic
+compiler:
+  - gcc
+  - clang 
+
+install: 
+  # Required on bionic
+  - sudo apt update -qq
+  # Boost
+  - sudo apt install -qq libboost-all-dev
+  # Qt5
+  - sudo apt install -qq qt5-qmake qt5-default
+  # SFML
+  - sudo apt install -qq libsfml-dev
+  # cppcheck
+  - sudo apt install -qq cppcheck
+  # Codecov
+  - sudo pip install codecov
+  # OCLint
+  - ./scripts/install_oclint
+  # clang-tidy
+  - sudo apt install -qq clang clang-tidy
+  # SLOCcount
+  - sudo apt install -qq sloccount
+
+services:
+  - xvfb
+  - alsa
+
+script: 
+  # Build the project, then:
+  - qmake -qt=qt5 DEFINES+=IS_ON_TRAVIS DEFINES+=LOGIC_ONLY simulation.pro
+  - make --silent debug
+  - ./simulation --test
+  # Build and run and profile normal program
+  - make clean
+  - make --silent release
+  - timeout 150s ./simulation 
+  - gprof simulation > gprof.log
+  - head gprof.log -n 300
+  # OCLint, failed OCLint does not break the build
+  - ./scripts/do_oclint || true
+  # Get code coverage
+  - cp debug/*.* .
+  - ./scripts/get_code_cov >/dev/null
+  - codecov >/dev/null
+  # cppcheck
+  - travis_wait 50 cppcheck --quiet --error-exitcode=1 .  || true
+  # clang-tidy
+  #- clang-tidy $(ls *.cpp) --checks=-*,cppcoreguidelines-*,-cppcoreguidelines-pro-bounds-array-to-pointer-decay,-cppcoreguidelines-avoid-magic-numbers,-cppcoreguidelines-pro-type-union-access --format-style=mozilla -- -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtCore -std=c++17 -fPIC
+  #- clang-tidy $(ls *.cpp) --checks=-*,cppcoreguidelines-*,-cppcoreguidelines-pro-bounds-array-to-pointer-decay -- -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtCore -std=c++17 -fPIC
+  #- clang-tidy $(ls *.cpp) --checks=cppcoreguidelines-* -- -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtCore -std=c++17 -fPIC
+  # - clang-tidy $(ls {*.cpp,*.h}) -- -std=c++17 2>/dev/null
+  # SLOCcount
+  #   remove OCLint and .git, otherwise it will be counted as well
+  - rm -rf oclint-0.10.3 oclint-0.10.3-x86_64-linux-3.13.0-74-generic.tar.gz oclint.log
+  - rm -rf .git
+  - rm -rf debug
+  - rm -rf release
+  - cd ..; sloccount --overhead 1 --personcost 22614 project1_vG_W_2016 | egrep -v "Adding"; cd project1_vG_W_2016
+
+after_success:
+  # Codecov
+  - bash <(curl -s https://codecov.io/bash)
