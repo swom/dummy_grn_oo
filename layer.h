@@ -12,6 +12,9 @@ public:
     ///Returns const ref to m_nodes
     const std::vector<node>& get_nodes() const noexcept {return m_nodes;}
 
+    ///Returns  ref to m_nodes
+    std::vector<node>& get_nodes() noexcept {return m_nodes;}
+
 private:
     std::vector<node> m_nodes;
 

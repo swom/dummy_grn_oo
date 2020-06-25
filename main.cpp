@@ -1,9 +1,14 @@
 #include <iostream>
+#include "grn.h"
 
-using namespace std;
-
+void test() noexcept
+{
+    test_grn();
+    test_layer();
+    test_node();
+}
 int main()
 {
-    cout << "Hello World!" << endl;
+    test();
     return 0;
 }
