@@ -2,12 +2,12 @@
 #define NODE_H
 
 #include<vector>
-#include"connection.h"
 
 class node
 {
 public:
-    node();
+    node(double bias = 0,
+         double state = 0);
 
     ///Returns the value of the bias
     double get_bias() const noexcept { return  m_bias;}
@@ -20,6 +20,9 @@ public:
 
     ///Return const ref to vector of pointers to sending nodes
     const std::vector<node *>& get_sending_nodes() const noexcept {return m_incoming_nodes;}
+
+    ///Sets the bias of the node
+    void set_bias(double bias) noexcept {m_bias = bias;}
 
     ///sets vector of pointers to sending nodes
     void set_sending_nodes(const std::vector<node *>& sending_nodes) noexcept { m_incoming_nodes = sending_nodes;}
@@ -52,6 +55,8 @@ private:
 ///Checks that two nodes are the same
 bool operator==(const node& lhs, const node& rhs);
 
+///Checks that two nodes are NOT the same
+bool operator!= (const node& lhs, const node& rhs);
 
 ///Calculates the signal received by a node
 double receive_signal(const node& n) noexcept;

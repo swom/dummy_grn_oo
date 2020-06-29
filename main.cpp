@@ -4,7 +4,6 @@
 void test() noexcept
 {
     test_grn();
-    test_layer();
     test_node();
 }
 int main()

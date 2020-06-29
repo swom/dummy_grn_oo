@@ -5,11 +5,9 @@ CONFIG -= qt
 
 SOURCES += \
         grn.cpp \
-        layer.cpp \
         main.cpp \
         node.cpp
 
 HEADERS += \
     grn.h \
-    layer.h \
     node.h
