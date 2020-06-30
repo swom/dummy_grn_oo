@@ -18,8 +18,14 @@ public:
     ///Returns const ref to the vector of connections weights
     const std::vector<double>& get_connections_weights() const noexcept { return m_incoming_weights;}
 
+    ///Returns ref to the vector of connections weights
+    std::vector<double>& get_connections_weights() noexcept { return m_incoming_weights;}
+
     ///Return const ref to vector of pointers to sending nodes
     const std::vector<node *>& get_sending_nodes() const noexcept {return m_incoming_nodes;}
+
+    ///Return const ref to vector of pointers to sending nodes
+    std::vector<node *>& get_sending_nodes() noexcept {return m_incoming_nodes;}
 
     ///Sets the bias of the node
     void set_bias(double bias) noexcept {m_bias = bias;}

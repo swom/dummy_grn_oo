@@ -10,6 +10,8 @@ node::node(double bias,
 {
     assert(m_incoming_nodes.empty());
     assert(m_incoming_weights.empty());
+    assert(m_bias - bias < 0.0001 &&m_bias - bias > -0.0001);
+    assert(m_state - state < 0.00001 && m_state - state > -0.0001);
 }
 
 bool operator== (const node& lhs, const node& rhs)
@@ -50,7 +52,6 @@ void test_node() noexcept
         assert(n.get_bias() < 0.0001 && n.get_bias() > -0.0001);
         assert(n.get_state() < 0.00001 && n.get_state() > -0.0001);
     }
-
 
     //A node receives a signal equal to the sum of the
     //products of connection weight
