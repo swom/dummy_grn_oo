@@ -50,6 +50,23 @@ bool operator!=(const grn& lhs, const grn& rhs)
     return !(lhs == rhs);
 }
 
+std::ifstream& operator>>(std::ifstream& is, grn& g)
+{
+
+    g = grn{};
+
+    return is;
+}
+
+std::ostream& operator<<(std::ostream& os, const grn& g)
+{
+
+    save_nodes(os, g);
+    save_connections(os, g);
+
+    return os;
+}
+
 double calc_mean_weights_biases(const grn& g)
 {
     return calc_sum_weights_biases(g)/count_weights_biases(g);
@@ -131,6 +148,14 @@ bool is_self_connected(const std::vector<node>& layer)
     return true;
 }
 
+grn load_grn( const std::string& filename)
+{
+    grn g;
+    std::ifstream  i_f(filename);
+    i_f >> g;
+    return g;
+}
+
 grn mutate(const grn& g, std::minstd_rand& rng, double m_p, double m_s)
 {
     grn mutated_grn = g;
@@ -154,6 +179,17 @@ grn mutate(const grn& g, std::minstd_rand& rng, double m_p, double m_s)
             new_node.set_weights(new_weights);
         }
     return mutated_grn;
+}
+
+void save_grn(const grn& grn, const std::string& filename)
+{
+    std::ofstream f(filename);
+    f << &grn;
+}
+
+void save_nodes(std::ostream& os, const grn& g)
+{
+
 }
 //Horrible function
 std::vector<node> self_connect(const std::vector<node>& layer)
@@ -470,6 +506,10 @@ void test_grn() noexcept
         std::vector<int> topology{2,2,2,5};
         grn grn{topology,rng,weights_biases_value,weights_biases_value};
 
+        std::string filename{"grn.csv"};
+        save_grn(grn,filename);
+        auto grn1 = load_grn(filename);
+        assert(grn1 == grn);
     }
 
 

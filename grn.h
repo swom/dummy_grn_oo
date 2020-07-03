@@ -57,6 +57,10 @@ bool is_self_connected(const std::vector<node>& layer);
 /// given a mutation probability and a mutation step
 grn mutate(const grn& g, std::minstd_rand& rng, double m_p, double m_s);
 
+///Writes the node ID,state,bias to an ostream
+/// NO CONNECTIONS
+void save_nodes(std::ostream& os, const grn& g);
+
 ///Fully connects the nodes of a layer to themeselves
 std::vector<node> self_connect(const std::vector<node>& layer);
 
